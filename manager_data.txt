@@ -1,1 +1,2 @@
-1,man1,passnew1,emps,0,1,1
+1,man1,passnew1,emps,0,0,1
+2,newman,newpois,newemployee,0,0,4

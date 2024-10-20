@@ -3,20 +3,16 @@
 
 #include <stdio.h>
 
-// Define the Transaction struct
+
 typedef struct {
-    char transactionType[20]; // Type of the transaction (e.g., "DEPOSIT", "WITHDRAWAL", "TRANSFER")
-    int fromId;               // ID of the account from which money is transferred
-    int toId;                 // ID of the account to which money is transferred
-    double money;             // Amount of money involved in the transaction
-    int entryID;              // Entry ID for logging or tracking
-    int transactionID;        // Unique identifier for the transaction
+    char transactionType[20]; 
+    int fromId;               
+    int toId;                 
+    double money;             
+    int entryID;              
+    int transactionID;        
 } Transaction;
 
-// Function declarations (if needed)
-// Example: void log_transaction(const Transaction *transaction);
-
-// Function declarations
 int get_last_transaction_id();
 void log_transaction(const Transaction *transaction);
 int deposit_money(double amount, int customer_id);

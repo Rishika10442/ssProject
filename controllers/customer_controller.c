@@ -14,7 +14,6 @@ void handle_customer(int client_socket) {
     char buffer[1024] = {0};
     int valread;
     
-    // Send a welcome message to the client
    const char *welcome_message = 
     "\n Welcome Customer. Enter one of the following commands:\n"
     "1. login\n"
@@ -37,7 +36,6 @@ void handle_customer(int client_socket) {
 
             memset(buffer, 0, sizeof(buffer));
 
-            // Read client input
             valread = read(client_socket, buffer, 1024);
             if (valread <= 0) {
                 printf("Client disconnected.\n");
@@ -45,48 +43,45 @@ void handle_customer(int client_socket) {
                 break;
             }
 
-            // Determine which command the admin sent
             if (strncmp(buffer, "login", 5) == 0) {
-                handle_customer_session(client_socket);  // Call login function
+                handle_customer_session(client_socket); 
             }
             else if (strncmp(buffer, "logout", 6) == 0) {
-                customer_logout(client_socket);  // Call login function
+                customer_logout(client_socket); 
             }else if (strncmp(buffer, "status", 6) == 0) {
-                check_customer_status(client_socket);  // Call login function
+                check_customer_status(client_socket); 
             }else if (strncmp(buffer, "exit", 4) == 0) {
             send(client_socket, "goodbye\n", strlen("goodbye\n"), 0);
 
                 close(client_socket);
 
-            // Print a message on the server side for debugging
             printf("Client disconnected after sending 'exit' command.\n");
 
-            // Exit the thread by returning NULL, effectively ending the client handler
             pthread_exit(NULL);
         } 
         else if (strncmp(buffer, "view account balance", 20) == 0) {
-                customer_balance(client_socket);  // Call login function
+                customer_balance(client_socket);
             }
             else if (strncmp(buffer, "change password", 15) == 0) {
-                change_passwordCustomer(client_socket);  // Call login function
+                change_passwordCustomer(client_socket);  
             }
             else if (strncmp(buffer, "deposit money", 13) == 0) {
-                deposit(client_socket);  // Call login function
+                deposit(client_socket); 
             }
              else if (strncmp(buffer, "withraw money", 13) == 0) {
-                withraw(client_socket);  // Call login function
+                withraw(client_socket);  
             }else if (strncmp(buffer, "transfer funds", 14) == 0) {
-                transfer(client_socket);  // Call login function
+                transfer(client_socket);  
             }else if (strncmp(buffer, "11", 2) == 0) {
-                history(client_socket);  // Call login function
+                history(client_socket); 
             }else if (strncmp(buffer, "apply for loan", 14) == 0) {
-                application(client_socket);  // Call login function
+                application(client_socket);  
             }else if (strncmp(buffer, "12", 2) == 0) {
-                view_app(client_socket);  // Call login function
+                view_app(client_socket);  
             }else if (strncmp(buffer, "add feedback", 12) == 0) {
-                feedback_addition(client_socket);  // Call login function
+                feedback_addition(client_socket); 
             }else if (strncmp(buffer, "view feedbacks", 14) == 0) {
-                feedback_viewCustomer(client_socket);  // Call login function
+                feedback_viewCustomer(client_socket);  
             }
 
             else {
@@ -107,24 +102,20 @@ void handle_customer_session(int client_socket) {
     read(client_socket, username, 50);
 	 username[strcspn(username, "\n")] = 0;
     
-    // Print received username for debugging
     printf("Received Username: %s\n", username);
-    // Send request for password
     send(client_socket, "Enter Password: ", strlen("Enter Password: "), 0);
     read(client_socket, password, 50);
 
 	password[strcspn(password, "\n")] = 0;
 
-    // Print received password for debugging
     printf("Received Password: %s\n", password);
 
-    // Validate credentials
     cust_id = validate_customer_credentials(username, password);
 
     if (cust_id == -1) {
        send(client_socket, "Invalid credentials.\n", strlen("Invalid credentials.\n"), 0);
     } else if (cust_id == -2) {
-send(client_socket, "Already logged in.Only one session per admin is allowed\n", strlen("Already logged in .Only one session per admin is allowed\n"), 0);       
+send(client_socket, "Already logged in.Only one session per admin is allowed. Enter ok to continue\n", strlen("Already logged in .Only one session per admin is allowed. Enter ok to continue\n"), 0);       
  
     } else if(cust_id == -3){
         send(client_socket, "Your account is deactivated\n", strlen("Your account is deactivated\n"), 0);
@@ -138,55 +129,50 @@ send(client_socket, "Already logged in.Only one session per admin is allowed\n",
 }
 
 void customer_logout(int client_socket) {
-    char buffer[50];  // Buffer to read the ID
+    char buffer[50];  
     int cust_id;
 
-    // Prompt for admin ID
     send(client_socket, "Enter ID: ", strlen("Enter ID: "), 0);
     
-    // Read admin ID from the client
     ssize_t bytes_read = read(client_socket, buffer, sizeof(buffer) - 1);
     if (bytes_read < 0) {
         perror("Failed to read from client");
-        return; // Handle the error
+        return; 
     }
 
-    // Null-terminate the string
     buffer[bytes_read] = '\0';
 
-    // Convert the buffer to an integer
     cust_id = atoi(buffer);
 
-    // Call the function to log out the admin
    int res =  logout_customer(cust_id);
 	printf("%d",res);
 fflush(stdout);
 if(res==-1){
 send(client_socket,"you were already logged out\n",strlen("you were already logged out\n"));
 }
-  else{  // Send confirmation message to the client
+  else{  
     send(client_socket, "You have been logged out.\n", strlen("You have been logged out.\n"), 0);
 }
 }
 
 void check_customer_status(int client_socket) {
-    char buffer[50];  // Buffer to read the ID
+    char buffer[50];  
     int cust_id;
 
-    // Prompt for admin ID
+    
     send(client_socket, "Enter ID: ", strlen("Enter ID: "), 0);
     
-    // Read admin ID from the client
+    
     ssize_t bytes_read = read(client_socket, buffer, sizeof(buffer) - 1);
     if (bytes_read < 0) {
         perror("Failed to read from client");
-        return; // Handle the error
+        return; 
     }
 
-    // Null-terminate the string
+   
     buffer[bytes_read] = '\0';
 
-    // Convert the buffer to an integer
+    
     cust_id = atoi(buffer);
 	int res = customer_status(cust_id);
 	if(res==1){
@@ -201,34 +187,34 @@ void check_customer_status(int client_socket) {
 }
 
 void customer_balance(int client_socket) {
-    char buffer[50];  // Buffer to read the ID
+    char buffer[50];  
     int cust_id;
 
-    // Prompt for admin ID
+    
     send(client_socket, "Enter ID: ", strlen("Enter ID: "), 0);
     
-    // Read admin ID from the client
+  
     ssize_t bytes_read = read(client_socket, buffer, sizeof(buffer) - 1);
     if (bytes_read < 0) {
         perror("Failed to read from client");
-        return; // Handle the error
+        return; 
     }
 
-    // Null-terminate the string
+    
     buffer[bytes_read] = '\0';
 
-    // Convert the buffer to an integer
+   
     cust_id = atoi(buffer);
 
-    // Call the function to log out the admin
+   
    int res =  check_balance(cust_id);
 	printf("%d",res);
 fflush(stdout);
 
-char message[256]=""; // Buffer to hold the response message
+char message[256]=""; 
     int length = snprintf(message, sizeof(message), "Your account balance is %d\n", res);
 
-    // Send the balance to the client
+    
     if (send(client_socket, message, length, 0) == -1) {
         perror("Error sending balance");
     }
@@ -236,33 +222,33 @@ char message[256]=""; // Buffer to hold the response message
 }
 
 void change_passwordCustomer(client_socket){
-char buffer[50];  // Buffer to read the ID
+char buffer[50];  
     int cust_id;
 
-// Prompt for admin ID
+
     send(client_socket, "Enter ID: ", strlen("Enter ID: "), 0);
     
-    // Read admin ID from the client
+  
     ssize_t bytes_read = read(client_socket, buffer, sizeof(buffer) - 1);
     if (bytes_read < 0) {
         perror("Failed to read from client");
-        return; // Handle the error
+        return; 
     }
 
-    // Null-terminate the string
+   
     buffer[bytes_read] = '\0';
 
-    // Convert the buffer to an integer
+    
     cust_id = atoi(buffer);
 
 char current_password[50]="", password[50]="";
 
-// Send request for password
+
     send(client_socket, "Enter current Password: ", strlen("Enter current Password: "), 0);
     read(client_socket, current_password, 50);
 
 	current_password[strcspn(current_password, "\n")] = 0;
-// Send request for password
+
     send(client_socket, "Enter new Password: ", strlen("Enter new Password: "), 0);
     read(client_socket, password, 50);
 
@@ -283,23 +269,23 @@ send(client_socket, "Customer ID is wrong.\n", strlen("Customer ID is wrong.\n")
 
 void deposit(int client_socket){
 
-    char buffer[256]="";  // Buffer to read the ID
+    char buffer[256]="";  
     int cust_id;
 
-    // Prompt for admin ID
+    
     send(client_socket, "Enter your customer ID: ", strlen("Enter your customer ID: "), 0);
 
-    // Read admin ID from the client
+   
     ssize_t bytes_read = read(client_socket, buffer, sizeof(buffer) - 1);
     if (bytes_read < 0) {
         perror("Failed to read from client");
-        return; // Handle the error
+        return; 
     }
 
-    // Null-terminate the string
+   
     buffer[bytes_read] = '\0';
 
-    // Convert the buffer to an integer
+   
     cust_id = atoi(buffer);
     int res = customer_status(cust_id);
 
@@ -311,9 +297,9 @@ void deposit(int client_socket){
         perror("eror in getting money to deposit");
         return;
     }
-    buffer[balance_len] = '\0';  // Null-terminate the string
+    buffer[balance_len] = '\0';  
     printf("Buffer content before conversion: %s\n", buffer);
-    int money = atoi(buffer);  // Convert string to double
+    int money = atoi(buffer);  
     printf("recieved money for deposit %d\n",money);
     //
     int rep = deposit_money(money,cust_id);
@@ -332,23 +318,20 @@ void deposit(int client_socket){
 
 void withraw(int client_socket){
 
-    char buffer[256]="";  // Buffer to read the ID
+    char buffer[256]="";  
     int cust_id;
 
-    // Prompt for admin ID
     send(client_socket, "Enter your customer ID: ", strlen("Enter your customer ID: "), 0);
 
-    // Read admin ID from the client
+    
     ssize_t bytes_read = read(client_socket, buffer, sizeof(buffer) - 1);
     if (bytes_read < 0) {
         perror("Failed to read from client");
-        return; // Handle the error
+        return; 
     }
 
-    // Null-terminate the string
     buffer[bytes_read] = '\0';
 
-    // Convert the buffer to an integer
     cust_id = atoi(buffer);
     int res = customer_status(cust_id);
 
@@ -360,9 +343,9 @@ void withraw(int client_socket){
         perror("eror in getting money to withraw");
         return;
     }
-    buffer[balance_len] = '\0';  // Null-terminate the string
+    buffer[balance_len] = '\0'; 
     printf("Buffer content before conversion: %s\n", buffer);
-    int money = atoi(buffer);  // Convert string to double
+    int money = atoi(buffer);  
     printf("recieved money for withraw %d\n",money);
     //
     int rep = withraw_money(money,cust_id);
@@ -381,23 +364,22 @@ void withraw(int client_socket){
 
 void transfer(int client_socket){
 
-    char buffer[256]="";  // Buffer to read the ID
+    char buffer[256]="";  
     int cust_id;
 
-    // Prompt for admin ID
+   
     send(client_socket, "Enter your customer ID: ", strlen("Enter your customer ID: "), 0);
 
-    // Read admin ID from the client
+   
     ssize_t bytes_read = read(client_socket, buffer, sizeof(buffer) - 1);
     if (bytes_read < 0) {
         perror("Failed to read from client");
-        return; // Handle the error
+        return; 
     }
 
-    // Null-terminate the string
     buffer[bytes_read] = '\0';
 
-    // Convert the buffer to an integer
+    
     cust_id = atoi(buffer);
     int res = customer_status(cust_id);
 
@@ -405,20 +387,20 @@ void transfer(int client_socket){
     if(res==1){
         int cust_id2;
 
-        // Prompt for admin ID
+        
         send(client_socket, "Enter customer ID whom you want to send money: ", strlen("Enter customer ID whom you want to send money: "), 0);
 
-        // Read admin ID from the client
+        
         ssize_t bytes_read = read(client_socket, buffer, sizeof(buffer) - 1);
         if (bytes_read < 0) {
             perror("Failed to read from client");
-            return; // Handle the error
+            return; 
         }
 
-        // Null-terminate the string
+       
         buffer[bytes_read] = '\0';
 
-        // Convert the buffer to an integer
+      
         cust_id2 = atoi(buffer);
 
 
@@ -431,9 +413,9 @@ void transfer(int client_socket){
         perror("eror in getting money to withraw");
         return;
     }
-    buffer[balance_len] = '\0';  // Null-terminate the string
+    buffer[balance_len] = '\0'; 
     printf("Buffer content before conversion: %s\n", buffer);
-    int money = atoi(buffer);  // Convert string to double
+    int money = atoi(buffer); 
     printf("rmoney to send %d\n",money);
     //
     int rep = transfer_funds(money,cust_id,cust_id2);
@@ -457,23 +439,21 @@ void transfer(int client_socket){
 
 void history(int client_socket){
 
-    char buffer[256]="";  // Buffer to read the ID
+    char buffer[256]="";  
     int cust_id;
 
-    // Prompt for admin ID
+  
     send(client_socket, "Enter your customer ID: ", strlen("Enter your customer ID: "), 0);
 
-    // Read admin ID from the client
+ 
     ssize_t bytes_read = read(client_socket, buffer, sizeof(buffer) - 1);
     if (bytes_read < 0) {
         perror("Failed to read from client");
-        return; // Handle the error
+        return; 
     }
 
-    // Null-terminate the string
     buffer[bytes_read] = '\0';
 
-    // Convert the buffer to an integer
     cust_id = atoi(buffer);
     int res = customer_status(cust_id);
 
@@ -483,9 +463,9 @@ void history(int client_socket){
         Transaction* transactions = get_transaction_history(cust_id, &num_transactions);
 
         if (num_transactions > 0) {
-            char transaction_buffer[1024] = "";  // To hold the formatted transactions
+            char transaction_buffer[1024] = "";  
 
-            // Loop through all the retrieved transactions and format them
+           
             for (int i = 0; i < num_transactions; i++) {
                 char temp[256];
                 snprintf(temp, sizeof(temp), "TransactionID: %d, Type: %s, From: %d, To: %d, Amount: %.2f\n",
@@ -495,11 +475,11 @@ void history(int client_socket){
                          transactions[i].toId,
                          transactions[i].money);
 
-                // Concatenate the transaction details to the buffer
+                
                 strcat(transaction_buffer, temp);
             }
 
-            // Send the transaction history to the client
+            
             send(client_socket, transaction_buffer, strlen(transaction_buffer), 0);
 
         } else if (num_transactions == 0) {
@@ -508,7 +488,7 @@ void history(int client_socket){
             send(client_socket, "Error retrieving transactions.\n", strlen("Error retrieving transactions.\n"), 0);
         }
 
-        // Free the dynamically allocated memory for transactions
+        
         if (transactions != NULL) {
             free(transactions);
         }
@@ -525,23 +505,23 @@ void history(int client_socket){
 
 void application(int client_socket){
 
-    char buffer[256]="";  // Buffer to read the ID
+    char buffer[256]="";  
     int cust_id;
 
-    // Prompt for admin ID
+    
     send(client_socket, "Enter your customer ID: ", strlen("Enter your customer ID: "), 0);
 
-    // Read admin ID from the client
+    
     ssize_t bytes_read = read(client_socket, buffer, sizeof(buffer) - 1);
     if (bytes_read < 0) {
         perror("Failed to read from client");
-        return; // Handle the error
+        return; 
     }
 
-    // Null-terminate the string
+    
     buffer[bytes_read] = '\0';
 
-    // Convert the buffer to an integer
+    
     cust_id = atoi(buffer);
     int res = customer_status(cust_id);
 
@@ -552,9 +532,9 @@ void application(int client_socket){
         read(client_socket, subject, 50);
         subject[strcspn(subject, "\n")] = 0;
 
-        // Print received username for debugging
+        
         printf("Received subject: %s\n", subject);
-        // Send request for password
+        
 
 
 
@@ -567,11 +547,11 @@ void application(int client_socket){
         perror("eror in getting money to loan");
         return;
     }
-    buffer[balance_len] = '\0';  // Null-terminate the string
+    buffer[balance_len] = '\0';  
     printf("Buffer content before conversion: %s\n", buffer);
-    int money = atoi(buffer);  // Convert string to double
+    int money = atoi(buffer);  
     printf("recieved money for loan %d\n",money);
-    //
+    
     int rep = apply_loan(subject,money,cust_id);
     if(rep==1){
         char success_message[100];
@@ -589,23 +569,23 @@ void application(int client_socket){
 
 void view_app(int client_socket){
 
-    char buffer[256]="";  // Buffer to read the ID
+    char buffer[256]=""; 
     int cust_id;
 
-    // Prompt for admin ID
+    
     send(client_socket, "Enter your customer ID: ", strlen("Enter your customer ID: "), 0);
 
-    // Read admin ID from the client
+   
     ssize_t bytes_read = read(client_socket, buffer, sizeof(buffer) - 1);
     if (bytes_read < 0) {
         perror("Failed to read from client");
-        return; // Handle the error
+        return; 
     }
 
-    // Null-terminate the string
+  
     buffer[bytes_read] = '\0';
 
-    // Convert the buffer to an integer
+    
     cust_id = atoi(buffer);
     int res = customer_status(cust_id);
 
@@ -626,8 +606,8 @@ void view_app(int client_socket){
             return;
         }
 
-        // Prepare the response to the client
-        char buffer[1024];  // Adjust buffer size as needed
+        
+        char buffer[1024];  
         memset(buffer, 0, sizeof(buffer));
         strcat(buffer, "Loan Applications History:\n");
 
@@ -640,7 +620,7 @@ void view_app(int client_socket){
             strcat(buffer, loan_info);
         }
 
-        // Send the response to the client
+        
         send(client_socket, buffer, strlen(buffer), 0);
         
     }
@@ -652,23 +632,23 @@ void view_app(int client_socket){
 }
 
 void feedback_addition(client_socket){
-    char buffer[256]="";  // Buffer to read the ID
+    char buffer[256]="";  
     int cust_id;
 
-    // Prompt for admin ID
+   
     send(client_socket, "Enter your customer ID: ", strlen("Enter your customer ID: "), 0);
 
-    // Read admin ID from the client
+   
     ssize_t bytes_read = read(client_socket, buffer, sizeof(buffer) - 1);
     if (bytes_read < 0) {
         perror("Failed to read from client");
-        return; // Handle the error
+        return; 
     }
 
-    // Null-terminate the string
+  
     buffer[bytes_read] = '\0';
 
-    // Convert the buffer to an integer
+    
     cust_id = atoi(buffer);
     int res = customer_status(cust_id);
 
@@ -679,10 +659,9 @@ void feedback_addition(client_socket){
         read(client_socket, subject, 50);
         subject[strcspn(subject, "\n")] = 0;
 
-        // Print received username for debugging
+       
         printf("Received feedbak: %s\n", subject);
-        // Send request for password
-
+      
 
     int rep = enter_feedback(subject,cust_id);
     if(rep==1){
@@ -701,23 +680,23 @@ void feedback_addition(client_socket){
 
 void feedback_viewCustomer(int client_socket){
 
-    char buffer2[256]="";  // Buffer to read the ID
+    char buffer2[256]="";  
     int cust_id;
 
-    // Prompt for admin ID
+    
     send(client_socket, "Enter your customer ID: ", strlen("Enter your customer ID: "), 0);
 
-    // Read admin ID from the client
+   
     ssize_t bytes_read = read(client_socket, buffer2, sizeof(buffer2) - 1);
     if (bytes_read < 0) {
         perror("Failed to read from client");
-        return; // Handle the error
+        return; 
     }
 
-    // Null-terminate the string
+  
     buffer2[bytes_read] = '\0';
 
-    // Convert the buffer to an integer
+    
     cust_id = atoi(buffer2);
     int res = customer_status(cust_id);
 
@@ -727,24 +706,24 @@ void feedback_viewCustomer(int client_socket){
     char buffer[1024]="";
     int feedback_count;
 
-    // Get the feedback history for the customer
+   
     feedback_count = feedback_history(cust_id, feedbacks, MAX_FEEDBACKS);
     
     if (feedback_count < 0) {
-        // Send an error message to the client
+        
         snprintf(buffer, sizeof(buffer), "Error: Unable to retrieve feedback history.\n");
         send(client_socket, buffer, strlen(buffer), 0);
         return;
     }
 
     if (feedback_count == 0) {
-        // Send a message indicating no feedbacks found
+        
         snprintf(buffer, sizeof(buffer), "No feedback found for customer ID %d.\n", cust_id);
         send(client_socket, buffer, strlen(buffer), 0);
         return;
     }
 
-    // Send the feedback data to the client
+    
     for (int i = 0; i < feedback_count; i++) {
         char temp[256]="";
         snprintf(temp, sizeof(temp),

@@ -3,7 +3,7 @@
 #ifndef BANK_MODEL_H
 #define BANK_MODEL_H
 
-// Struct for storing employee details
+
 typedef struct {
     int id;
     char name[50];
@@ -15,7 +15,6 @@ typedef struct {
     int manager_id;
 } Employee;
 
-// Function declarations
 void add_employee(const char *name, const char *password);
 void modify_employee(int employee_id,const char *new_name,const char *new_password);
 void save_all_employees(Employee employees[], int num_employees);
@@ -26,7 +25,6 @@ int employee_status(int id);
 int employee_logout(int id);
 int change_employee_password(int employee_id, const char *current_password, const char *new_password);
 
-//customer
 int get_last_customer_id();
 void add_customer(const char *name, const char *password, double balance);
 void modify_customer(int id, const char *new_name, const char *new_password, double new_balance);

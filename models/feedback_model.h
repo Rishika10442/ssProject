@@ -3,15 +3,15 @@
 
 #include <stdio.h>
 
-#define MAX_FEEDBACKS 100  // You can adjust this limit as per your needs
+#define MAX_FEEDBACKS 100  
 
-// Define the Feedback struct
+
 typedef struct {
-    char desc[100];       // Description of the feedback
-    char review[255];     // Review content provided by the customer
-    int custID;           // Customer ID who gave the feedback
-    int manID;            // Manager ID to whom the feedback is directed
-    int feedbackID;       // Unique feedback ID for tracking
+    char desc[100];       
+    char review[255];     
+    int custID;           
+    int manID;            
+    int feedbackID;       
 } Feedback;
 
 

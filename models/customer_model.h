@@ -11,8 +11,8 @@ typedef struct {
     char name[50];
     char password[50];
     double balance;
-    int status;  // Could represent account status, e.g., 0 for inactive, 1 for active
-    int activeAccount;  // 0 for inactive, 1 for active
+    int status;  
+    int activeAccount;  
 } Customer;
 
 int validate_customer_credentials(const char *username, const char *password);

@@ -3,15 +3,15 @@
 
 #include <stdio.h>
 
-// Define the Transaction struct
+
 typedef struct {
-    char desc[20]; // Type of the transaction (e.g., "DEPOSIT", "WITHDRAWAL", "TRANSFER")
+    char desc[20]; 
     double amount;
-    int custID;               // ID of the account from which money is transferred
-    int manID;                 // ID of the account to which money is transferred
-    int empID;             // Amount of money involved in the transaction
-    int loanID;              // Entry ID for logging or tracking
-    int loanStatus;        // Unique identifier for the transaction
+    int custID;               
+    int manID;                
+    int empID;             
+    int loanID;            
+    int loanStatus;        
 } Loan;
 
 int apply_loan(const char *subject, double money, int custID);

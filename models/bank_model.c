@@ -13,21 +13,21 @@
 
 #define EMPLOYEE_DATA_FILE "/home/rishika-gupta/ssProject/employee_data.txt"
 
-// Function to add a new employee to the file
+
 void add_employee(const char *name, const char *password) {
     Employee employee;
     int fd;
     ssize_t bytes_read;
     char buffer[256];
 
-    // Open the employee data file, or create it if it doesn't exist
+
     fd = open(EMPLOYEE_DATA_FILE, O_RDWR | O_CREAT, 0644);
     if (fd == -1) {
         perror("Error opening file");
         exit(EXIT_FAILURE);
     }
 
-    // Find the last employee's ID (by reading through the file)
+    
     int last_id = 0;
     while ((bytes_read = read(fd, buffer, sizeof(buffer))) > 0) {
         char *line = strtok(buffer, "\n");
@@ -37,8 +37,8 @@ void add_employee(const char *name, const char *password) {
         }
     }
 
-    // Assign the new employee's details
-    employee.id = last_id + 1;  // Set ID as last_id + 1
+    
+    employee.id = last_id + 1;  
     strncpy(employee.name, name, sizeof(employee.name) - 1);
     strncpy(employee.password, password, sizeof(employee.password) - 1);
     employee.assignedLoans = 0;
@@ -48,7 +48,7 @@ void add_employee(const char *name, const char *password) {
     employee.manager_id = -1;
 
 
-    // Prepare the employee data to write to file
+    
     int length = snprintf(buffer, sizeof(buffer), "%d,%s,%s,%d,%d,%d,%d.%d\n",
                           employee.id, employee.name, employee.password, 
                           employee.assignedLoans, employee.rejectedLoans, 
@@ -67,7 +67,7 @@ void add_employee(const char *name, const char *password) {
 }
 
 
-// Function to load all employees from the file
+
 int load_all_employees(Employee employees[], int max_employees) {
     int fd = open(EMPLOYEE_DATA_FILE, O_RDONLY);
     if (fd == -1) {
@@ -85,7 +85,7 @@ int load_all_employees(Employee employees[], int max_employees) {
     buffer[bytes_read] = '\0';
     close(fd);
 
-    // Parse the file data into employee structures
+    
     char *line = strtok(buffer, "\n");
     int index = 0;
     while (line != NULL && index < max_employees) {
@@ -100,10 +100,10 @@ int load_all_employees(Employee employees[], int max_employees) {
         index++;
     }
 
-    return index;  // Return number of employees loaded
+    return index;  
 }
 
-// Function to save all employees back to the file
+
 void save_all_employees(Employee employees[], int num_employees) {
     int fd = open(EMPLOYEE_DATA_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (fd == -1) {
@@ -113,7 +113,7 @@ void save_all_employees(Employee employees[], int num_employees) {
 
     char buffer[256];
     for (int i = 0; i < num_employees; i++) {
-        // Print debug information for each employee
+
         printf("Parsed Employee - ID: %d, Name: %s, Password: %s, Assigned Loans: %d, Rejected Loans: %d, Accepted Loans: %d, Status: %d, Manager ID: %d\n", 
            employees[i].id, employees[i].name, employees[i].password, 
            employees[i].assignedLoans, employees[i].rejectedLoans, 
@@ -125,7 +125,7 @@ void save_all_employees(Employee employees[], int num_employees) {
                               employees[i].id, employees[i].name, employees[i].password, 
                               employees[i].assignedLoans, employees[i].rejectedLoans, employees[i].acceptedLoans,employees[i].status,employees[i].manager_id);
         
-        // Print the data being written to the file
+
         printf("Writing to file: %s", buffer);
 
         if (write(fd, buffer, length) == -1) {
@@ -140,9 +140,9 @@ void save_all_employees(Employee employees[], int num_employees) {
 }
 
 
-// Function to modify employee details
+
 void modify_employee(int employee_id, const char *new_name, const char *new_password) {
-    Employee employees[100];  // Assuming max 100 employees
+    Employee employees[100];  
     int num_employees = load_all_employees(employees, 100);
 
     if (num_employees == -1) {
@@ -150,11 +150,11 @@ void modify_employee(int employee_id, const char *new_name, const char *new_pass
         return;
     }
 
-    // Find the employee by ID
+    
     int found = 0;
     for (int i = 0; i < num_employees; i++) {
         if (employees[i].id == employee_id) {
-            // Modify the employee's name and password
+            
             if (new_name != NULL) {
                 strncpy(employees[i].name, new_name, sizeof(employees[i].name) - 1);
             }
@@ -175,18 +175,18 @@ void modify_employee(int employee_id, const char *new_name, const char *new_pass
         return;
     }
 
-    // Save the modified employees back to the file
+    
     save_all_employees(employees, num_employees);
 }
 
-// Function to validate employee credentials
+
 int validate_employee_credentials(const char *username, const char *password) {
-    Employee employees[100];  // Assuming max 100 employees
+    Employee employees[100];  
     int num_employees = load_all_employees(employees, 100);
 
     if (num_employees == -1) {
         printf("Failed to load employees.\n");
-        return -1;  // Return -1 to indicate failure in loading employees
+        return -1;  
     }
 
     for (int i = 0; i < num_employees; i++) {
@@ -195,20 +195,20 @@ int validate_employee_credentials(const char *username, const char *password) {
         
         if (strcmp(username, employees[i].name) == 0 && strcmp(password, employees[i].password) == 0) {
             if (employees[i].status == 1) {
-                return -2; // Employee already logged in
+                return -2; 
             }
 
-            // Mark the employee as logged in
+            
             login_employee(employees[i].id);
-            return employees[i].id; // Valid credentials, return employee ID
+            return employees[i].id; 
         }
     }
 
     printf("Invalid credentials for Username: %s, Password: %s\n", username, password);
-    return -1; // Invalid credentials
+    return -1; 
 }
 
-// Function to mark an employee as logged in by ID
+
 void login_employee(int id) {
     Employee employees[100];
     int num_employees = load_all_employees(employees, 100);
@@ -220,8 +220,8 @@ void login_employee(int id) {
 
     for (int i = 0; i < num_employees; i++) {
         if (employees[i].id == id) {
-            employees[i].status = 1;  // Mark as logged in (1)
-            save_all_employees(employees, num_employees);  // Save changes to file
+            employees[i].status = 1;  
+            save_all_employees(employees, num_employees);  
             printf("Employee with ID %d is now logged in.\n", id);
             return;
         }
@@ -229,9 +229,9 @@ void login_employee(int id) {
     printf("Employee with ID %d not found.\n", id);
 }
 
-// Function to log out an employee by ID
+
 int employee_logout(int id) {
-    Employee employees[100];  // Assuming max 100 employees
+    Employee employees[100];  
     int num_employees = load_all_employees(employees, 100);
 
     if (num_employees == -1) {
@@ -245,27 +245,27 @@ int employee_logout(int id) {
     for (int i = 0; i < num_employees; i++) {
         if (employees[i].id == id) {
             if (employees[i].status == 0) {
-                return -1;  // Employee already logged out
+                return -1;  
             }
-            employees[i].status = 0;  // Mark as logged out
-            save_all_employees(employees, num_employees);  // Save changes to file
+            employees[i].status = 0;  
+            save_all_employees(employees, num_employees);  
             printf("Employee %d logged out successfully.\n", id);
             fflush(stdout);
             return 0;
         }
     }
 
-    return -1;  // Employee not found
+    return -1;  
 }
 
-// Function to check the login status of an employee by ID
+
 int employee_status(int id) {
-    Employee employees[100];  // Assuming max 100 employees
+    Employee employees[100];  
     int num_employees = load_all_employees(employees, 100);
 
     if (num_employees == -1) {
         printf("Failed to load employees.\n");
-        return -1;  // Failed to load employees
+        return -1;  
     }
 
     for (int i = 0; i < num_employees; i++) {
@@ -275,13 +275,13 @@ int employee_status(int id) {
                     printf("Employee found with ID: %d, Status: %d\n", employees[i].id, employees[i].status);  // Debug statement
                     fflush(stdout);
             if (employees[i].status == 1) {
-                return 1;  // Employee is logged in
+                return 1; 
             }
-            return -1;  // Employee is not logged in
+            return -1; 
         }
     }
 
-    return -1;  // Employee not found
+    return -1; 
 }
 
 
@@ -290,16 +290,16 @@ int get_last_customer_id() {
     FILE *file = fopen(CUSTOMER_DATA_FILE, "r");
     if (file == NULL) {
         printf("Customer data file not found. Starting with ID 1.\n");
-        return 1;  // If file doesn't exist, start with ID 1
+        return 1; 
     }
 
-    char line[512];  // Use a larger buffer to accommodate longer lines
+    char line[512];  
     while (fgets(line, sizeof(line), file)) {
         int current_id;
 
-        // Ensure the line is not empty and starts with a number (customer ID)
+        
         if (sscanf(line, "%d,", &current_id) == 1) {
-            // Only update the last_id if a valid ID is extracted
+            
             if (current_id > last_id) {
                 last_id = current_id;
             }
@@ -308,35 +308,35 @@ int get_last_customer_id() {
 
     fclose(file);
 
-    // Return the next available ID (last ID + 1)
+    
     return last_id + 1;
 }
 
-// Function to add a new customer
+
 void add_customer(const char *name, const char *password, double balance) {
     Customer new_customer;
-    new_customer.id = get_last_customer_id(); // Increment ID for new customer
+    new_customer.id = get_last_customer_id(); 
     strncpy(new_customer.name, name, sizeof(new_customer.name) - 1);
-    new_customer.name[sizeof(new_customer.name) - 1] = '\0'; // Ensure null-termination
+    new_customer.name[sizeof(new_customer.name) - 1] = '\0'; 
     strncpy(new_customer.password, password, sizeof(new_customer.password) - 1);
-    new_customer.password[sizeof(new_customer.password) - 1] = '\0'; // Ensure null-termination
+    new_customer.password[sizeof(new_customer.password) - 1] = '\0'; 
     new_customer.balance = balance;
-    new_customer.status = 0; // Set active status (1 for active)
-    new_customer.activeAccount = 1; // Active account by default
+    new_customer.status = 0; 
+    new_customer.activeAccount = 1; 
 
-    // Open the customer data file with write access
+    
     int fd = open(CUSTOMER_DATA_FILE, O_WRONLY | O_CREAT | O_APPEND, 0644);
     if (fd == -1) {
         perror("Error opening customer data file");
         return;
     }
 
-    // Attempt to acquire an exclusive lock on the file
-    while (flock(fd, LOCK_EX | LOCK_NB) == -1) { // LOCK_NB makes it non-blocking
-        if (errno == EAGAIN) { // If lock is unavailable
+    
+    while (flock(fd, LOCK_EX | LOCK_NB) == -1) { 
+        if (errno == EAGAIN) {
             printf("File is locked, waiting to add customer...\n");
-            usleep(100000); // Sleep for 100ms before retrying
-            continue; // Try to acquire the lock again
+            usleep(100000); 
+            continue; 
         } else {
             perror("Error locking the customer data file");
             close(fd);
@@ -344,7 +344,7 @@ void add_customer(const char *name, const char *password, double balance) {
         }
     }
 
-    // Now write the new customer data to the file
+    
     char buffer[256];
     int length = snprintf(buffer, sizeof(buffer), "%d,%s,%s,%.2f,%d,%d\n",
                           new_customer.id, new_customer.name, new_customer.password,
@@ -354,7 +354,7 @@ void add_customer(const char *name, const char *password, double balance) {
         perror("Error writing to customer data file");
     }
 
-    // Release the file lock after writing
+    
     if (flock(fd, LOCK_UN) == -1) {
         perror("Error unlocking the customer data file");
     }
@@ -364,18 +364,18 @@ void add_customer(const char *name, const char *password, double balance) {
 }
 
 void modify_customer(int id, const char *new_name, const char *new_password, double new_balance) {
-    int fd = open(CUSTOMER_DATA_FILE, O_RDWR); // Open file for reading and writing
+    int fd = open(CUSTOMER_DATA_FILE, O_RDWR); 
     if (fd == -1) {
         perror("Error opening customer data file");
         return;
     }
 
-    // Attempt to acquire an exclusive lock on the file
-    while (flock(fd, LOCK_EX | LOCK_NB) == -1) { // LOCK_NB makes it non-blocking
-        if (errno == EAGAIN) { // If lock is unavailable
+    
+    while (flock(fd, LOCK_EX | LOCK_NB) == -1) { 
+        if (errno == EAGAIN) { 
             printf("File is locked, waiting to modify customer...\n");
-            usleep(100000); // Sleep for 100ms before retrying
-            continue; // Try to acquire the lock again
+            usleep(100000); 
+            continue; 
         } else {
             perror("Error locking the customer data file");
             close(fd);
@@ -383,14 +383,14 @@ void modify_customer(int id, const char *new_name, const char *new_password, dou
         }
     }
 
-    // Read the customer data from the file
+    
     char buffer[1024];
     ssize_t bytes_read;
-    Customer customers[100];  // Assuming a maximum of 100 customers
+    Customer customers[100];  
     int num_customers = 0;
 
     while ((bytes_read = read(fd, buffer, sizeof(buffer) - 1)) > 0) {
-        buffer[bytes_read] = '\0'; // Null-terminate the buffer
+        buffer[bytes_read] = '\0'; 
         char *line = strtok(buffer, "\n");
         while (line != NULL && num_customers < 100) {
             sscanf(line, "%d,%49[^,],%49[^,],%lf,%d,%d", 
@@ -405,37 +405,33 @@ void modify_customer(int id, const char *new_name, const char *new_password, dou
         }
     }
 
-    // Check for read errors
+    
     if (bytes_read == -1) {
         perror("Error reading customer data file");
-        flock(fd, LOCK_UN); // Unlock the file before returning
+        flock(fd, LOCK_UN); 
         close(fd);
         return;
     }
 
-    // Find and modify the specified customer
     for (int i = 0; i < num_customers; i++) {
         if (customers[i].id == id) {
-            // Update only the specified fields
             if (new_name != NULL) {
                 strncpy(customers[i].name, new_name, sizeof(customers[i].name) - 1);
-                customers[i].name[sizeof(customers[i].name) - 1] = '\0'; // Ensure null-termination
+                customers[i].name[sizeof(customers[i].name) - 1] = '\0'; 
             }
             if (new_password != NULL) {
                 strncpy(customers[i].password, new_password, sizeof(customers[i].password) - 1);
-                customers[i].password[sizeof(customers[i].password) - 1] = '\0'; // Ensure null-termination
+                customers[i].password[sizeof(customers[i].password) - 1] = '\0'; 
             }
-            customers[i].balance = new_balance; // Update balance
+            customers[i].balance = new_balance;
             printf("Customer ID: %d modified successfully.\n", id);
             break;
         }
     }
 
-    // Move the file pointer to the beginning and truncate the file
     lseek(fd, 0, SEEK_SET);
-    ftruncate(fd, 0); // Clear the file
+    ftruncate(fd, 0); 
 
-    // Write the modified data back to the file
     for (int i = 0; i < num_customers; i++) {
         int length = snprintf(buffer, sizeof(buffer), "%d,%s,%s,%.2f,%d,%d\n",
                               customers[i].id, customers[i].name, customers[i].password,
@@ -443,7 +439,7 @@ void modify_customer(int id, const char *new_name, const char *new_password, dou
         write(fd, buffer, length);
     }
 
-    // Release the file lock
+   
     if (flock(fd, LOCK_UN) == -1) {
         perror("Error unlocking the customer data file");
     }
@@ -465,18 +461,16 @@ int change_employee_password(int employee_id, const char *current_password, cons
                employees[i].id, employees[i].password);
         if (employees[i].id == employee_id) {
             if (strcmp(current_password, employees[i].password) == 0) {
-                // Change the password
                 strcpy(employees[i].password, new_password);
-                // Save the updated employees back to the file
                 save_all_employees(employees, num_employees);
-                return 1; // Password changed successfully
+                return 1;
             } else {
                 printf("Current password for employee %d is incorrect.\n", employee_id);
-                return -1; // Current password is incorrect
+                return -1; 
             }
         }
     }
 
     printf("Employee with ID %d not found.\n", employee_id);
-    return 0; // Employee not found
-}
+    return 0; 
+    }

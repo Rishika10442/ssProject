@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "manager_model.h"
 #include "bank_model.h" 
-#include "customer_model.h" // Assuming you have access to Employee struct and loading functions
+#include "customer_model.h" 
 
 #define MAX_MANAGERS 100
 #define MANAGER_DATA_FILE "/home/rishika-gupta/ssProject/manager_data.txt"
@@ -15,7 +15,7 @@ void add_manager(const char *name,const char *password, int emp_id) {
     Employee employees[100];
     int num_employees = load_all_employees(employees, 100);
 
-    // Find the employee with the given emp_id
+    
     Employee *emp = NULL;
     for (int i = 0; i < num_employees; i++) {
         if (employees[i].id == emp_id) {
@@ -29,13 +29,13 @@ void add_manager(const char *name,const char *password, int emp_id) {
         return;
     }
 
-    // Load all existing managers
+   
     int num_managers = load_all_managers(managers, MAX_MANAGERS);
 
-    // Get new manager ID
+   
     int new_manager_id = get_max_manager_id() + 1;
 
-    // Create the new manager entry
+    
     Manager new_manager;
     new_manager.id = new_manager_id;
     strncpy(new_manager.name, name, sizeof(new_manager.name));
@@ -45,11 +45,11 @@ void add_manager(const char *name,const char *password, int emp_id) {
     new_manager.status = 0;
     new_manager.emp_id = emp_id;
 
-    // Add the new manager to the array
+    
     managers[num_managers] = new_manager;
     num_managers++;
 
-    // Save the updated list of managers back to the file
+    
     save_all_managers(managers, num_managers);
 
     emp->manager_id = new_manager.id;
@@ -59,7 +59,7 @@ void add_manager(const char *name,const char *password, int emp_id) {
            new_manager.id, new_manager.name, new_manager.employee_name, new_manager.emp_id);
 }
 
-// Function to save all managers to file
+
 void save_all_managers(Manager managers[], int num_managers) {
     int fd = open(MANAGER_DATA_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (fd == -1) {
@@ -84,7 +84,7 @@ void save_all_managers(Manager managers[], int num_managers) {
     printf("Manager data saved successfully.\n");
 }
 
-// Function to load all managers from file
+
 int load_all_managers(Manager managers[], int max_managers) {
     int fd = open(MANAGER_DATA_FILE, O_RDONLY);
     if (fd == -1) {
@@ -119,7 +119,7 @@ int load_all_managers(Manager managers[], int max_managers) {
     return index;
 }
 
-// Function to get the max manager ID
+
 int get_max_manager_id() {
     int num_managers = load_all_managers(managers, MAX_MANAGERS);
     int max_id = 0;
@@ -131,55 +131,54 @@ int get_max_manager_id() {
     return max_id;
 }
 
-// Function to validate manager credentials
+
 int validate_manager_credentials(const char *name, const char *password) {
     Manager managers[MAX_MANAGERS];
     int num_managers = load_all_managers(managers, MAX_MANAGERS);
 
     if (num_managers == -1) {
         printf("Error loading managers.\n");
-        return -1;  // Error loading managers
+        return -1;  
     }
 
-    // Iterate through all managers and compare credentials
+   
     for (int i = 0; i < num_managers; i++) {
         printf("Comparing with Manager %d - Name: '%s', Password: '%s', Status: %d\n", 
                managers[i].id, managers[i].name, managers[i].password, managers[i].status);
 
-        // Validate the manager name and password
+      
         if (strcmp(name, managers[i].name) == 0 && strcmp(password, managers[i].password) == 0) {
             
-            // Check if the manager is already logged in
+           
             if (managers[i].status == 1) {
-                return -2;  // Manager already logged in
+                return -2;  
             }
 
-            // If credentials are valid and manager is not logged in, log in the manager
-            login_manager(managers[i].id);  // Assuming login_manager is the function that logs in the manager
-            return managers[i].id;  // Valid credentials, return the manager's ID
+            
+            login_manager(managers[i].id);  
+            return managers[i].id;  
         }
     }
 
-    return -1;  // Invalid credentials
+    return -1;  
 }
 
 void login_manager(int manager_id) {
     Manager managers[MAX_MANAGERS];
     int num_managers = load_all_managers(managers, MAX_MANAGERS);
 
-    // Iterate through the managers to find the matching ID and set the status to logged in (1)
     for (int i = 0; i < num_managers; i++) {
         if (managers[i].id == manager_id) {
-            managers[i].status = 1;  // Mark the manager as logged in
+            managers[i].status = 1;  
             break;
         }
     }
 
-    // Save the updated manager data back to the file
+    
     save_all_managers(managers, num_managers);
 }
 
-// Function to log out a manager by ID
+
 int logout_manager(int id) {
     printf("Call came for logging out this manager %d\n", id);
     fflush(stdout);
@@ -187,23 +186,22 @@ int logout_manager(int id) {
     Manager managers[MAX_MANAGERS];
     int num_managers = load_all_managers(managers, MAX_MANAGERS);
 
-    // Iterate through all managers and find the one to log out
     for (int i = 0; i < num_managers; i++) {
         if (managers[i].id == id) {
             if (managers[i].status == 0) {
-                return -1; // Manager already logged out
+                return -1; 
             }
-            managers[i].status = 0; // Mark manager as logged out
-            save_all_managers(managers, num_managers);  // Save changes to file
+            managers[i].status = 0; 
+            save_all_managers(managers, num_managers); 
             printf("Manager logged out successfully. Current status: %d\n", managers[i].status);
             fflush(stdout);
-            return 0; // Success
+            return 0; 
         }
     }
-    return -1; // Manager not found
+    return -1; 
 }
 
-// Function to check if a manager is logged in by ID
+
 int manager_status(int id) {
     Manager managers[MAX_MANAGERS];
     int num_managers = load_all_managers(managers, MAX_MANAGERS);
@@ -213,13 +211,13 @@ int manager_status(int id) {
             printf("manger ID %d, manager status %d\n",managers[i].id,managers[i].status);
             fflush(stdout);
             if (managers[i].status == 1) {
-                return 1;  // Manager is logged in
+                return 1; 
             }
-            return -1;  // Manager is logged out
+            return -1;  
         }
     }
 
-    return -1;  // Manager not found
+    return -1;  
 }
 
 int change_manager_password(int manager_id, const char *current_password, const char *new_password) {
@@ -234,20 +232,20 @@ int change_manager_password(int manager_id, const char *current_password, const 
                managers[i].id, managers[i].password);
         if (managers[i].id == manager_id) {
             if (strcmp(current_password, managers[i].password) == 0) {
-                // Change the password
+               
                 strcpy(managers[i].password, new_password);
-                // Save the updated managers back to the file
+                
                 save_all_managers(managers, num_managers); 
-                return 1; // Password changed successfully
+                return 1; 
             } else {
                 printf("Current password for manager %d is incorrect.\n", manager_id);
-                return -1; // Current password is incorrect
+                return -1; 
             }
         }
     }
     
     printf("Manager with ID %d not found.\n", manager_id);
-    return 0; // Manager not found
+    return 0; 
 }
 
 
@@ -258,21 +256,18 @@ int activation_change(int act, int cust_id) {
     printf("Call came to change activation status for customer ID: %d to %d\n", cust_id, act);
     fflush(stdout);
 
-    // Iterate through all customers to find the one with the matching ID
     for (int i = 0; i < num_customers; i++) {
         if (customers[i].id == cust_id) {
-            // Change the activeAccount field based on the provided act value
             customers[i].activeAccount = act;
 
             printf("Customer ID: %d, New activation status: %d\n", cust_id, customers[i].activeAccount);
             fflush(stdout);
 
-            // Save the updated customers back to the file
             save_customers(customers, num_customers);
-            return 1; // Successfully updated
+            return 1; 
         }
     }
 
     printf("Customer with ID %d not found.\n", cust_id);
-    return 0; // Customer not found
+    return 0; 
 }
