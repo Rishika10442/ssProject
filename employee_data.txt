@@ -1,4 +1,4 @@
-1,emps,psyt,1,0,2,0,1
+1,emps,psyt,1,0,2,1,1
 2,emp2,cpass2,0,1,1,0,0
-3,empNew,pass45,0,0,0,0,0
+3,empNew,pass45,1,0,0,0,0
 4,newemployee,passingthrough,0,0,0,0,2
